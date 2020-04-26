@@ -17,15 +17,27 @@ object CourtTimeParser {
 
   val logger = LoggerFactory.getLogger(getClass())
 
+  private lazy val formatter: PeriodFormatter = new PeriodFormatterBuilder()
+    .appendHours()
+    .appendSuffix(":")
+    .appendMinutes()
+    .appendSuffix(":")
+    .appendMillis()
+    .toFormatter
+
   def parseCourtElement(link: String): CourtTime = {
-    logger.info(s"link: $link")
+    logger.debug(s"link: $link")
     val (startTime, duration, date, courtNbr) = parseUrl(link) // Link can be empty string here.
+    toCourtTime(startTime, duration, date, courtNbr, "PadelTampere") // Hard code for now
+  }
+
+  def toCourtTime(startTime: String, duration: String, date: String, courtNumber: String, location: String): CourtTime = {
     CourtTime(
       parseDataType[LocalTime](startTime, startTime => LocalTime.parse(startTime)),
-      parseDataType[Duration](duration, duration => Duration.parse(duration)),
+      parseDataType[Period](duration, duration => Period.parse(duration, formatter)),
       parseDataType[LocalDate](date, date => LocalDate.parse(date)),
-      courtNbr,
-      CourtLocation.PadelTampere // Hard code for now
+      courtNumber,
+      CourtLocation.withName(location)
     )
   }
 
@@ -41,10 +53,10 @@ object CourtTimeParser {
   }
 
   private def parseDataType[T](x: String, typeTransformation: (String)=>T): Option[T] = {
-    logger.debug("Parsing {}", x)
+    logger.debug(s"Parsing $x")
     Try(typeTransformation(x)) match {
       case Success(parsedValue) => Some(parsedValue)
-      case Failure(malformedValue) => logger.error("Failed to parse {}", malformedValue); None
+      case Failure(malformedValue) => logger.error(s"Failed to parse $malformedValue"); None
     }
   }
 }

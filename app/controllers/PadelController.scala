@@ -4,7 +4,7 @@ import javax.inject.Inject
 import model.CourtTime
 import play.api.mvc._
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
-//import spray.json._
+import spray.json._
 
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
@@ -16,13 +16,14 @@ import parsing.CourtTimeParser
 import scala.concurrent._
 
 class PadelController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
+  import json.PadelJsonProtocol._
 
   private lazy val browser = JsoupBrowser()
 
   def index1: Action[AnyContent] = Action { implicit request =>
     val courtUrl = "https://vj.slsystems.fi/padeltampere/ftpages/ft-varaus-table-01.php?laji=1&pvm=2020-04-16&goto=0"
     val elementList = parseCourts(courtUrl)
-    val r: Result = Ok(elementList.mkString(", "))
+    val r: Result = Ok(elementList.map(ct => ct.toJson).toJson.prettyPrint)
     r
   }
 
@@ -49,10 +50,10 @@ class PadelController @Inject()(val controllerComponents: ControllerComponents) 
   //  }
 
   //  private def courtTimeToString(courtTime: CourtTime): String = {
-  //    val formatter: PeriodFormatter = new PeriodFormatterBuilder()
-  //      .appendHours()
-  //      .appendSuffix("h")
-  //      .toFormatter
+//      val formatter: PeriodFormatter = new PeriodFormatterBuilder()
+//        .appendHours()
+//        .appendSuffix("h")
+//        .toFormatter
   //    //    val durationStr = formatter.print(courtTime.duration.toPeriod)
   //    s"CourtTime(Start time: ${courtTime.startTime}, Duration: ${courtTime.duration}, Date: ${courtTime.date}, Court: ${courtTime.courtNumber}, Location: ${courtTime.location})"
   //  }
