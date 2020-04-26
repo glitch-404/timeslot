@@ -1,3 +1,5 @@
 ->         /v1/posts               v1.post.PostRouter
 
-GET        /                       controllers.PadelController.index1
+GET        /                            controllers.PadelController.today
+
+GET        /today                       controllers.PadelController.today

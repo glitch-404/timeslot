@@ -2,12 +2,7 @@ package parsing
 
 import model.{CourtLocation, CourtTime}
 import com.github.nscala_time.time.Imports._
-import com.github.nscala_time.time.StaticLocalDate
 import io.lemonlabs.uri.Url
-import net.ruippeixotog.scalascraper.model.Element
-import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
-import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
 import org.joda.time.format.{PeriodFormatter, PeriodFormatterBuilder}
 import org.slf4j.LoggerFactory
 

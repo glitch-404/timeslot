@@ -14,7 +14,7 @@ lazy val root = (project in file("."))
       "net.codingwell" %% "scala-guice" % "4.2.6",
       "net.ruippeixotog" %% "scala-scraper" % "2.2.0",
       "com.github.nscala-time" %% "nscala-time" % "2.22.0",
-      "io.spray" %%  "spray-json" % "1.3.5",
+      //"io.spray" %%  "spray-json" % "1.3.5",
       "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
     ),
     scalacOptions ++= Seq(
