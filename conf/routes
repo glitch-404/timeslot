@@ -1,4 +1,4 @@
-->         /v1/posts               v1.post.PostRouter
+->         /padel/v1               v1.post.PostRouter
 
 GET        /                            controllers.PadelController.today
 
