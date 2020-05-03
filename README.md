@@ -1,71 +1,25 @@
-# Play REST API
+# Project Timeslot
 
-This is the example project for [Making a REST API in Play](http://developer.lightbend.com/guides/play-rest-api/index.html).
+The purpose of this project is to create a scheduling system for our [padel](https://en.wikipedia.org/wiki/Padel_(sport)) games that is better than Whatsapp discussions. There are plenty of apps that allow you to schedule events, therefore my intention is to create an extremely tailored solution that is specific to our use case. I primarily want to get some practice in with Scala, in addition to having a go at frontend development with React.
 
-## Appendix
+## My initial plan
 
-### Running
+I want to create a web client for both selecting free padel court reservations and allowing willing members to signal their willingness to participate for any given available reservation. Generally, most users will be using this via a mobile device, therefore I will prioritize mobile the most. Secondary usage will be on desktop. 
 
-You need to download and install sbt for this application to run.
+Down the line I would want to either create an Electron app or a mobile app (probably would be Android only). If I have the motivation, I will attempt both.
 
-Once you have sbt installed, the following at the command prompt will start up Play in development mode:
+## Step 1
 
-```bash
-sbt run
-```
+The first course of action is to read up on the available technologies to settle on the most feasible alternatives. At this point I have already selected React for the frontend technology, and additionally express a strong desire for the backend to be Dockerized. Once the technology stack has been outlined (probably will be subject to change), I will begin working via a combination of trial-and-error and loose planning. Spending too much time on planning is a guaranteed way to exhaust all motivation for the project, thus I will try to focus more on coding.
 
-Play will start up on the HTTP port at <http://localhost:9000/>.   You don't need to deploy or reload anything -- changing any source code while the server is running will automatically recompile and hot-reload the application on the next HTTP request.
+## Step 2
 
-### Usage
+Now that I locked the framework down (Play framework), I will begin developing the MVP with the following set of features (some already completed):
+* Scala REST API with ability to:
+    * Get court times by date for all locations (Padel Tampere, Padeluxe)
+    * Get court times by start and end datetime
+* An intial React frontend for:
+    * providing datetime filters
+    * and displaying results
 
-If you call the same URL from the command line, you’ll see JSON. Using [httpie](https://httpie.org/), we can execute the command:
-
-```bash
-http --verbose http://localhost:9000/v1/posts
-```
-
-and get back:
-
-```routes
-GET /v1/posts HTTP/1.1
-```
-
-Likewise, you can also send a POST directly as JSON:
-
-```bash
-http --verbose POST http://localhost:9000/v1/posts title="hello" body="world"
-```
-
-and get:
-
-```routes
-POST /v1/posts HTTP/1.1
-```
-
-### Load Testing
-
-The best way to see what Play can do is to run a load test.  We've included Gatling in this test project for integrated load testing.
-
-Start Play in production mode, by [staging the application](https://www.playframework.com/documentation/2.5.x/Deploying) and running the play script:s
-
-```bash
-sbt stage
-cd target/universal/stage
-./bin/play-scala-rest-api-example -Dplay.http.secret.key=some-long-key-that-will-be-used-by-your-application
-```
-
-Then you'll start the Gatling load test up (it's already integrated into the project):
-
-```bash
-sbt ";project gatling;gatling:test"
-```
-
-For best results, start the gatling load test up on another machine so you do not have contending resources.  You can edit the [Gatling simulation](http://gatling.io/docs/2.2.2/general/simulation_structure.html#simulation-structure), and change the numbers as appropriate.
-
-Once the test completes, you'll see an HTML file containing the load test chart:
-
-```bash
-./play-scala-rest-api-example/target/gatling/gatlingspec-1472579540405/index.html
-```
-
-That will contain your load test results.
+**NOTE:** The template used is play-scala-rest-api-example provided by Lightbend: https://github.com/playframework/play-samples/tree/2.8.x/play-scala-rest-api-example
