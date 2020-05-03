@@ -1,6 +1,6 @@
 package parsing
 
-import model.{CourtLocation, CourtTime}
+import model.{Court, CourtTime}
 import com.github.nscala_time.time.Imports._
 import io.lemonlabs.uri.Url
 import org.slf4j.LoggerFactory
@@ -9,10 +9,10 @@ object CourtTimeParser {
 
   private val logger = LoggerFactory.getLogger(getClass())
 
-  def parseCourtElement(link: String): CourtTime = {
+  def parseCourtElement(link: String, location: String): CourtTime = {
     logger.debug(s"link: $link")
     val (startTime, duration, date, courtNbr) = parseUrl(link) // Link can be empty string here.
-    toCourtTime(startTime, duration, date, courtNbr, "PadelTampere") // Hard code for now
+    toCourtTime(startTime, duration, date, courtNbr, location)
   }
 
   def toCourtTime(startTime: String,
@@ -31,7 +31,7 @@ object CourtTimeParser {
       ),
       DateParser.parseDateType[LocalDate](date, date => LocalDate.parse(date)),
       courtNumber,
-      CourtLocation.withName(location)
+      location
     )
   }
 

@@ -14,4 +14,4 @@ case class CourtTime(startTime: Option[LocalTime],
                      duration: Option[Period],
                      date: Option[LocalDate],
                      courtNumber: String,
-                     location: CourtLocation.Value)
+                     location: String)
