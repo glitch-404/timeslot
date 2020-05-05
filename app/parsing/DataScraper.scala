@@ -1,8 +1,7 @@
 package parsing
 
-import io.lemonlabs.uri.Url
 import model.CourtTime
-import model.Court
+import model.PadelCourts._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
@@ -10,58 +9,34 @@ import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.elementList
 import play.api.Logger
 
+/**
+  * Object responsible for scraping the CourtTime model objects from their corresponding URLs.
+  * Uses hard coded URLs and enums, which is sufficient for this simplistic use case.
+  */
 object DataScraper {
 
   private val logger = Logger(getClass)
   private lazy val browser = JsoupBrowser()
 
-  private val baseUrls: Map[Court.Location, Url] = Map(
-    Court.PadelTampere -> Url.parse(
-      "https://vj.slsystems.fi/padeltampere/ftpages/ft-varaus-table-01.php" // ?laji=1
-    ),
-    Court.Padeluxe -> Url.parse(
-      "https://vj.slsystems.fi/padeluxe/ftpages/ft-varaus-table-01.php?laji=1"
-    )
-  )
-
-  def courtsByDate(location: Court.Location,
-                   date: String = ""): List[CourtTime] = {
+  def courtsByDate(location: Location, date: String = ""): List[CourtTime] = {
     logger.debug(s"datestring: $date")
-    val dateParam =
+    // TODO: Date validation?
+    lazy val dateParam =
       if (date.isEmpty) DateParser.todayAsString else date
-    location match {
-      case Court.All          => getAllCourts(dateParam)
-      case Court.PadelTampere => getPadelTreCourts(dateParam)
-      case Court.Padeluxe     => getPadeluxeCourts(dateParam)
-    }
+    lazy val courtFilter: PadelCourt => Boolean = pc =>
+      if (location.equals(All)) true else pc.location.equals(location)
+    allCourts
+      .filter(courtFilter)
+      .flatMap(
+        pc =>
+          parseCourts(pc.url.addParam("pvm", dateParam).toString(), pc.toString)
+      )
+      .toList
   }
 
-  private def getAllCourts(date: String): List[CourtTime] = {
-    getPadelTreCourts(date) ++ getPadeluxeCourts(date)
-  }
-
-  def getPadeluxeCourts(date: String): List[CourtTime] = {
-    val padeluxeUrl = baseUrls(Court.Padeluxe)
-      .addParam("pvm", date)
-    parseCourts(padeluxeUrl.toString(), "Padeluxe")
-  }
-
-  // TODO: These need to be Futures.
-  private def getPadelTreCourts(date: String): List[CourtTime] = {
-    val messukyläUrl = baseUrls(Court.PadelTampere)
-      .addParam("laji", "2")
-      .addParam("pvm", date)
-    val linnakallioUrl = baseUrls(Court.PadelTampere)
-      .addParam("laji", "1")
-      .addParam("pvm", date)
-    val messukyläTimes =
-      parseCourts(messukyläUrl.toString(), "Padel Tampere - Messukylä")
-    val linnakallioTimes =
-      parseCourts(linnakallioUrl.toString(), "Padel Tampere - Linnakallio")
-    messukyläTimes ++ linnakallioTimes
-  }
-
+  // This needs to return a Future
   private def parseCourts(url: String, location: String): List[CourtTime] = {
+    logger.debug(s"Getting URL: $url")
     for {
       court: Element <- browser.get(url) >> elementList(".t1b1111")
       availableCourtOpt = if (court.innerHtml.toLowerCase.contains("varaa"))
@@ -78,5 +53,4 @@ object DataScraper {
       link <- linkOpt
     } yield link
   }
-
 }

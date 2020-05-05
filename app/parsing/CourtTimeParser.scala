@@ -1,6 +1,6 @@
 package parsing
 
-import model.{Court, CourtTime}
+import model.CourtTime
 import com.github.nscala_time.time.Imports._
 import io.lemonlabs.uri.Url
 import org.slf4j.LoggerFactory
@@ -11,7 +11,7 @@ object CourtTimeParser {
 
   def parseCourtElement(link: String, location: String): CourtTime = {
     logger.debug(s"link: $link")
-    val (startTime, duration, date, courtNbr) = parseUrl(link) // Link can be empty string here.
+    val (startTime, duration, date, courtNbr) = courtDataFromUrl(link) // Link can be empty string here.
     toCourtTime(startTime, duration, date, courtNbr, location)
   }
 
@@ -35,7 +35,10 @@ object CourtTimeParser {
     )
   }
 
-  private def parseUrl(link: String): (String, String, String, String) = {
+  // Parses a URL within the HTML table cell to gather court reservation data.
+  private def courtDataFromUrl(
+    link: String
+  ): (String, String, String, String) = {
     val url = Url.parse(link)
     implicit val qp: Map[String, Vector[String]] = url.query.paramMap
     (
@@ -52,5 +55,4 @@ object CourtTimeParser {
     val value = queryParams.get(key)
     value.fold("")(paramList => paramList.head)
   }
-
 }

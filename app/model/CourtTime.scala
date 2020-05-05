@@ -3,6 +3,7 @@ package model
 import com.github.nscala_time.time.Imports._
 
 /**
+  * Data model representation of court reservations.
   *
   * @param startTime The starting time of the court reservation
   * @param duration The duration of the reservation
