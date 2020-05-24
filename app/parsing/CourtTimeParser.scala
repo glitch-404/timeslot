@@ -1,6 +1,6 @@
 package parsing
 
-import model.{CourtLocation, CourtTime}
+import model.CourtTime
 import com.github.nscala_time.time.Imports._
 import io.lemonlabs.uri.Url
 import org.slf4j.LoggerFactory
@@ -9,10 +9,11 @@ object CourtTimeParser {
 
   private val logger = LoggerFactory.getLogger(getClass())
 
-  def parseCourtElement(link: String): CourtTime = {
+  def parseCourtElement(link: Option[String], location: String): CourtTime = {
+    if (link.isEmpty) throw new RuntimeException("Link missing from GET")
     logger.debug(s"link: $link")
-    val (startTime, duration, date, courtNbr) = parseUrl(link) // Link can be empty string here.
-    toCourtTime(startTime, duration, date, courtNbr, "PadelTampere") // Hard code for now
+    val (startTime, duration, date, courtNbr) = courtDataFromUrl(link.get) // Link can be empty string here.
+    toCourtTime(startTime, duration, date, courtNbr, location)
   }
 
   def toCourtTime(startTime: String,
@@ -31,11 +32,14 @@ object CourtTimeParser {
       ),
       DateParser.parseDateType[LocalDate](date, date => LocalDate.parse(date)),
       courtNumber,
-      CourtLocation.withName(location)
+      location
     )
   }
 
-  private def parseUrl(link: String): (String, String, String, String) = {
+  // Parses a URL within the HTML table cell to gather court reservation data.
+  private def courtDataFromUrl(
+    link: String
+  ): (String, String, String, String) = {
     val url = Url.parse(link)
     implicit val qp: Map[String, Vector[String]] = url.query.paramMap
     (
@@ -52,5 +56,4 @@ object CourtTimeParser {
     val value = queryParams.get(key)
     value.fold("")(paramList => paramList.head)
   }
-
 }
