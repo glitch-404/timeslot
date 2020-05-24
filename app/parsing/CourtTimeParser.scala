@@ -9,9 +9,10 @@ object CourtTimeParser {
 
   private val logger = LoggerFactory.getLogger(getClass())
 
-  def parseCourtElement(link: String, location: String): CourtTime = {
+  def parseCourtElement(link: Option[String], location: String): CourtTime = {
+    if (link.isEmpty) throw new RuntimeException("Link missing from GET")
     logger.debug(s"link: $link")
-    val (startTime, duration, date, courtNbr) = courtDataFromUrl(link) // Link can be empty string here.
+    val (startTime, duration, date, courtNbr) = courtDataFromUrl(link.get) // Link can be empty string here.
     toCourtTime(startTime, duration, date, courtNbr, location)
   }
 
