@@ -26,7 +26,7 @@ class PostController @Inject()(cc: PostControllerComponents)(
     Form(
       mapping(
         "title" -> nonEmptyText,
-        "body" -> text
+        "body"  -> text
       )(PostFormInput.apply)(PostFormInput.unapply)
     )
   }

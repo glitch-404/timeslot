@@ -20,15 +20,24 @@ class PadelController @Inject()(val controllerComponents: ControllerComponents)
   private val logger = Logger(getClass)
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  def today: Action[AnyContent] = Action { implicit request =>
-    val courtTimes: List[CourtTime] =
-      Await.result(DataScraper.courtsByDate(All), 5.seconds)
-    Ok(Json.toJson(courtTimes))
-  }
+  def today: Action[AnyContent] =
+    Action { implicit request =>
+      val courtTimes: List[CourtTime] =
+        Await.result(DataScraper.courtsByDate(All), 5.seconds)
+      Ok(Json.toJson(courtTimes))
+    }
 
-  def getByDate(date: String): Action[AnyContent] = Action { implicit request =>
-    val courtTimes: List[CourtTime] =
-      Await.result(DataScraper.courtsByDate(All, date), 5.seconds)
-    Ok(Json.toJson(courtTimes))
-  }
+  def getByDate(date: String): Action[AnyContent] =
+    Action { implicit request =>
+      val courtTimes: List[CourtTime] =
+        Await.result(DataScraper.courtsByDate(All, date), 5.seconds)
+      Ok(Json.toJson(courtTimes))
+    }
+
+  def getUntilDate(date: String): Action[AnyContent] =
+    Action { implicit request =>
+      val courtTimes: List[CourtTime] =
+        Await.result(DataScraper.courtsByDate(All, date), 5.seconds)
+      Ok(Json.toJson(courtTimes))
+    }
 }

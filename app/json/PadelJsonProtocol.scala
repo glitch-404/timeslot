@@ -27,9 +27,9 @@ object PadelJsonProtocol {
         "startTime" -> ct.startTime.getOrElse(nullstr).toString,
         "duration" -> periodFormatter
           .print(ct.duration.getOrElse(null)), // NPE possibility
-        "date" -> ct.date.getOrElse(nullstr).toString,
+        "date"        -> ct.date.getOrElse(nullstr).toString,
         "courtNumber" -> ct.courtNumber,
-        "location" -> ct.location.toString
+        "location"    -> ct.location.toString
       )
     }
   }

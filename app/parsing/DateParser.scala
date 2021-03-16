@@ -41,9 +41,11 @@ object DateParser extends DateParser {
     .appendDayOfMonth(2)
     .toFormatter
 
-  override def parseDateType[D](x: String,
-                                typeTransformation: String => D): Option[D] = {
-    logger.debug(s"Parsing $x")
+  override def parseDateType[D](
+      x: String,
+      typeTransformation: String => D
+  ): Option[D] = {
+    logger.trace(s"Parsing $x")
     Try(typeTransformation(x)) match {
       case Success(parsedValue) => Some(parsedValue)
       case Failure(malformedValue) =>

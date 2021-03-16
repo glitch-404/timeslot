@@ -11,16 +11,19 @@ object CourtTimeParser {
 
   def parseCourtElement(link: Option[String], location: String): CourtTime = {
     if (link.isEmpty) throw new RuntimeException("Link missing from GET")
-    logger.debug(s"link: $link")
-    val (startTime, duration, date, courtNbr) = courtDataFromUrl(link.get) // Link can be empty string here.
+    logger.trace(s"link: $link")
+    val (startTime, duration, date, courtNbr) =
+      courtDataFromUrl(link.get) // Link can be empty string here.
     toCourtTime(startTime, duration, date, courtNbr, location)
   }
 
-  def toCourtTime(startTime: String,
-                  duration: String,
-                  date: String,
-                  courtNumber: String,
-                  location: String): CourtTime = {
+  def toCourtTime(
+      startTime: String,
+      duration: String,
+      date: String,
+      courtNumber: String,
+      location: String
+  ): CourtTime = {
     CourtTime(
       DateParser.parseDateType[LocalTime](
         startTime,
@@ -38,9 +41,9 @@ object CourtTimeParser {
 
   // Parses a URL within the HTML table cell to gather court reservation data.
   private def courtDataFromUrl(
-    link: String
+      link: String
   ): (String, String, String, String) = {
-    val url = Url.parse(link)
+    val url                                      = Url.parse(link)
     implicit val qp: Map[String, Vector[String]] = url.query.paramMap
     (
       getQueryParam("klo"),
@@ -51,7 +54,7 @@ object CourtTimeParser {
   }
 
   private def getQueryParam(
-    key: String
+      key: String
   )(implicit queryParams: Map[String, Vector[String]]) = {
     val value = queryParams.get(key)
     value.fold("")(paramList => paramList.head)

@@ -10,7 +10,6 @@ import net.ruippeixotog.scalascraper.scraper.ContentExtractors.elementList
 import play.api.Logger
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
 /**
   * Object responsible for scraping the CourtTime model objects from their corresponding URLs.
@@ -18,13 +17,13 @@ import scala.util.{Failure, Success}
   */
 object DataScraper {
 
-  private val logger = Logger(getClass)
+  private val logger       = Logger(getClass)
   private lazy val browser = JsoupBrowser()
 
   def courtsByDate(location: Location, date: String = "")(
-    implicit ec: ExecutionContext
-  ): Future[List[CourtTime]] = {
-    logger.debug(s"datestring: $date")
+      implicit
+      ec: ExecutionContext): Future[List[CourtTime]] = {
+    logger.trace(s"datestring: $date")
     // TODO: Date validation?
     lazy val dateParam =
       if (date.isEmpty) DateParser.todayAsString else date
@@ -33,18 +32,19 @@ object DataScraper {
     }
     allCourts
       .filter(courtFilter)
-      .map(
-        (pc: PadelCourt) =>
-          parseCourts(pc.url.addParam("pvm", dateParam).toString(), pc.toString)
-      )
+      .map((pc: PadelCourt) =>
+        parseCourts(pc.url.addParam("pvm", dateParam).toString(), pc.toString))
       .toList
       .reduce[Future[List[CourtTime]]]((a, b) => a.zipWith(b)((x, y) => x ++ y))
   }
 
-  private def parseCourts(url: String, location: String)(
-    implicit ec: ExecutionContext
-  ): Future[List[CourtTime]] = {
-    logger.debug(s"Getting URL: $url")
+  private def parseCourts(
+      url: String,
+      location: String,
+      dateUntil: String = DateParser.todayAsString
+  )(implicit
+    ec: ExecutionContext): Future[List[CourtTime]] = {
+    logger.trace(s"Getting URL: $url")
     val elementList: Future[Iterable[Element]] = getAsyncUrl(url)
     elementList.map(iterableElements => {
       // Map Element to CourtDate
@@ -59,7 +59,7 @@ object DataScraper {
   }
 
   private def getAsyncUrl(
-    url: String
+      url: String
   )(implicit ec: ExecutionContext): Future[Iterable[Element]] = {
     Future {
       browser.get(url) >> elementList(".t1b1111")
