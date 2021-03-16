@@ -1,8 +1,6 @@
 package parsing
 
-import java.time.format.DateTimeFormatter
-
-import com.github.nscala_time.time.Imports.DateTime
+import com.github.nscala_time.time.Imports.{DateTime, LocalDate}
 import org.joda.time.format.{
   DateTimeFormatterBuilder,
   PeriodFormatter,
@@ -19,6 +17,8 @@ trait DateParser {
   def getPeriodFormatter: PeriodFormatter
 
   def todayAsString: String
+
+  def datesUntilGivenDate(givenDate: String): List[String]
 }
 
 object DateParser extends DateParser {
@@ -59,4 +59,12 @@ object DateParser extends DateParser {
   }
 
   override def getPeriodFormatter: PeriodFormatter = periodFormatter
+
+  override def datesUntilGivenDate(givenDate: String): List[String] = {
+    val asLocalDate = LocalDate.parse(givenDate)
+    val test: Iterator[LocalDate] = Iterator.iterate(LocalDate.now())(
+      _ plusDays 1
+    ) takeWhile (_ isBefore asLocalDate.plusDays(1))
+    test.map(_.toString(dateFormatter)).toList
+  }
 }

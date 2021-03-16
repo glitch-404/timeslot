@@ -12,7 +12,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext}
 import scala.util.{Failure, Success}
 
-class PadelController @Inject()(val controllerComponents: ControllerComponents)
+class PadelController @Inject() (val controllerComponents: ControllerComponents)
     extends BaseController {
 
   import json.PadelJsonProtocol._
@@ -37,7 +37,7 @@ class PadelController @Inject()(val controllerComponents: ControllerComponents)
   def getUntilDate(date: String): Action[AnyContent] =
     Action { implicit request =>
       val courtTimes: List[CourtTime] =
-        Await.result(DataScraper.courtsByDate(All, date), 5.seconds)
+        Await.result(DataScraper.courtsUntilDate(All, date), 5.seconds)
       Ok(Json.toJson(courtTimes))
     }
 }

@@ -1,5 +1,9 @@
-->         /padel/v1               v1.post.PostRouter
+->         /padel/v1                    v1.post.PostRouter
 
 GET        /                            controllers.PadelController.today
 
 GET        /today                       controllers.PadelController.today
+
+GET        /reservations/:date          controllers.PadelController.getByDate(date: String)
+
+GET        /up-until/:date              controllers.PadelController.getUntilDate(date: String)
