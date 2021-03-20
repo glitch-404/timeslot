@@ -17,15 +17,9 @@ class RequestHandler @Inject()(webCommands: WebCommands,
                                errorHandler: HttpErrorHandler,
                                configuration: HttpConfiguration,
                                filters: HttpFilters)
-    extends DefaultHttpRequestHandler(webCommands,
-                                      optDevContext,
-                                      router,
-                                      errorHandler,
-                                      configuration,
-                                      filters) {
+    extends DefaultHttpRequestHandler(webCommands, optDevContext, router, errorHandler, configuration, filters) {
 
-  override def handlerForRequest(
-      request: RequestHeader): (RequestHeader, Handler) = {
+  override def handlerForRequest(request: RequestHeader): (RequestHeader, Handler) = {
     super.handlerForRequest {
       // ensures that REST API does not need a trailing "/"
       if (isREST(request)) {
@@ -52,9 +46,7 @@ class RequestHandler @Inject()(webCommands: WebCommands,
         )
       } else {
         origReq.withTarget(
-          RequestTarget(path = path,
-                        uriString = origReq.uri,
-                        queryString = origReq.queryString)
+          RequestTarget(path = path, uriString = origReq.uri, queryString = origReq.queryString)
         )
       }
     } else {

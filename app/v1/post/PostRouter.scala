@@ -22,10 +22,13 @@ class PostRouter @Inject()(controller: PadelController) extends SimpleRouter {
     case GET(p"/") =>
       controller.today
 
-    case POST(p"/") =>
+    case GET(p"/period") =>
       controller.today
 
     case GET(p"/$date") =>
       controller.getByDate(date)
+
+    case GET(p"/until/$date") =>
+      controller.getUntilDate(date)
   }
 }

@@ -1,5 +1,6 @@
 package parsing
 
+import binding.DateRange
 import model.CourtTime
 import model.PadelCourts._
 import net.ruippeixotog.scalascraper.dsl.DSL._
@@ -20,40 +21,15 @@ object DataScraper {
   private val logger       = Logger(getClass)
   private lazy val browser = JsoupBrowser()
 
-  def courtsByDate(location: Location, date: String = "")(implicit
-      ec: ExecutionContext
-  ): Future[List[CourtTime]] = {
-    logger.trace(s"datestring: $date")
-    // TODO: Date validation?
-    lazy val dateParam =
-      if (date.isEmpty) DateParser.todayAsString else date
-    lazy val courtFilter: PadelCourt => Boolean = { pc =>
-      if (location.equals(All)) true else pc.location.equals(location)
-    }
-    allCourts
-      .filter(courtFilter)
-      .map((pc: PadelCourt) =>
-        parseCourts(pc.url.addParam("pvm", dateParam).toString(), pc.toString)
-      )
-      .toList
-      .reduce[Future[List[CourtTime]]]((a, b) => a.zipWith(b)((x, y) => x ++ y))
-  }
-
-  def courtsUntilDate(
-      location: Location,
-      dateUntil: String = DateParser.todayAsString
-  )(implicit
-      ec: ExecutionContext
-  ): Future[List[CourtTime]] = {
-    logger.trace(s"dateUntil: $dateUntil")
-    // TODO: Date validation?
+  def getRange(location: Location, dateRange: DateRange)(implicit ec: ExecutionContext): Future[List[CourtTime]] = {
+    logger.trace(s"Range from: ${dateRange.from} until ${dateRange.until}")
     lazy val courtFilter: PadelCourt => Boolean = { pc =>
       if (location.equals(All)) true else pc.location.equals(location)
     }
     allCourts
       .filter(courtFilter)
       .flatMap { (pc: PadelCourt) =>
-        val dates: List[String] = DateParser.datesUntilGivenDate(dateUntil)
+        val dates: List[String] = DateParser.getDateRange(dateRange)
         for {
           date <- dates
           targetUrl = pc.url.addParam("pvm", date).toString()

@@ -1,11 +1,8 @@
 package parsing
 
 import com.github.nscala_time.time.Imports.{DateTime, LocalDate}
-import org.joda.time.format.{
-  DateTimeFormatterBuilder,
-  PeriodFormatter,
-  PeriodFormatterBuilder
-}
+import binding.DateRange
+import org.joda.time.format.{DateTimeFormatterBuilder, PeriodFormatter, PeriodFormatterBuilder}
 import org.slf4j.LoggerFactory
 
 import scala.util.{Failure, Success, Try}
@@ -18,7 +15,7 @@ trait DateParser {
 
   def todayAsString: String
 
-  def datesUntilGivenDate(givenDate: String): List[String]
+  def getDateRange(givenRange: DateRange): List[String]
 }
 
 object DateParser extends DateParser {
@@ -60,11 +57,12 @@ object DateParser extends DateParser {
 
   override def getPeriodFormatter: PeriodFormatter = periodFormatter
 
-  override def datesUntilGivenDate(givenDate: String): List[String] = {
-    val asLocalDate = LocalDate.parse(givenDate)
-    val test: Iterator[LocalDate] = Iterator.iterate(LocalDate.now())(
+  override def getDateRange(givenRange: DateRange): List[String] = {
+    val startDate = LocalDate.parse(givenRange.from)
+    val endDate   = LocalDate.parse(givenRange.until)
+    val iter: Iterator[LocalDate] = Iterator.iterate(startDate)(
       _ plusDays 1
-    ) takeWhile (_ isBefore asLocalDate.plusDays(1))
-    test.map(_.toString(dateFormatter)).toList
+    ) takeWhile (_ isBefore endDate.plusDays(1))
+    iter.map(_.toString(dateFormatter)).toList
   }
 }

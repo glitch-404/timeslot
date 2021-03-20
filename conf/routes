@@ -7,3 +7,5 @@ GET        /today                       controllers.PadelController.today
 GET        /reservations/:date          controllers.PadelController.getByDate(date: String)
 
 GET        /up-until/:date              controllers.PadelController.getUntilDate(date: String)
+
+GET        /range                       controllers.PadelController.getRange(dr: binding.DateRange)

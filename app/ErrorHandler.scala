@@ -21,10 +21,7 @@ class ErrorHandler(environment: Environment,
                    configuration: Configuration,
                    sourceMapper: Option[SourceMapper] = None,
                    optionRouter: => Option[Router] = None)
-    extends DefaultHttpErrorHandler(environment,
-                                    configuration,
-                                    sourceMapper,
-                                    optionRouter) {
+    extends DefaultHttpErrorHandler(environment, configuration, sourceMapper, optionRouter) {
 
   private val logger =
     org.slf4j.LoggerFactory.getLogger("application.ErrorHandler")
@@ -35,17 +32,11 @@ class ErrorHandler(environment: Environment,
            configuration: Configuration,
            sourceMapper: OptionalSourceMapper,
            router: Provider[Router]) = {
-    this(environment,
-         configuration,
-         sourceMapper.sourceMapper,
-         Some(router.get))
+    this(environment, configuration, sourceMapper.sourceMapper, Some(router.get))
   }
 
-  override def onClientError(request: RequestHeader,
-                             statusCode: Int,
-                             message: String): Future[Result] = {
-    logger.debug(
-      s"onClientError: statusCode = $statusCode, uri = ${request.uri}, message = $message")
+  override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
+    logger.debug(s"onClientError: statusCode = $statusCode, uri = ${request.uri}, message = $message")
 
     Future.successful {
       val result = statusCode match {
@@ -66,16 +57,11 @@ class ErrorHandler(environment: Environment,
     }
   }
 
-  override protected def onDevServerError(
-      request: RequestHeader,
-      exception: UsefulException): Future[Result] = {
-    Future.successful(
-      InternalServerError(Json.obj("exception" -> exception.toString)))
+  override protected def onDevServerError(request: RequestHeader, exception: UsefulException): Future[Result] = {
+    Future.successful(InternalServerError(Json.obj("exception" -> exception.toString)))
   }
 
-  override protected def onProdServerError(
-      request: RequestHeader,
-      exception: UsefulException): Future[Result] = {
+  override protected def onProdServerError(request: RequestHeader, exception: UsefulException): Future[Result] = {
     Future.successful(InternalServerError)
   }
 }

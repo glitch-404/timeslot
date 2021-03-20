@@ -16,9 +16,7 @@ import scala.concurrent.{ExecutionContext, Future}
   * This is commonly used to hold request-specific information like
   * security credentials, and useful shortcut methods.
   */
-trait PostRequestHeader
-    extends MessagesRequestHeader
-    with PreferredMessagesProvider
+trait PostRequestHeader extends MessagesRequestHeader with PreferredMessagesProvider
 class PostRequest[A](request: Request[A], val messagesApi: MessagesApi)
     extends WrappedRequest(request)
     with PostRequestHeader
@@ -35,11 +33,9 @@ trait RequestMarkerContext {
     def &&(marker2: LogstashMarker): LogstashMarker = marker1.and(marker2)
   }
 
-  implicit def requestHeaderToMarkerContext(
-      implicit request: RequestHeader): MarkerContext = {
+  implicit def requestHeaderToMarkerContext(implicit request: RequestHeader): MarkerContext = {
     MarkerContext {
-      marker("id"       -> request.id) && marker("host" -> request.host) && marker(
-        "remoteAddress" -> request.remoteAddress)
+      marker("id" -> request.id) && marker("host" -> request.host) && marker("remoteAddress" -> request.remoteAddress)
     }
   }
 
@@ -52,8 +48,7 @@ trait RequestMarkerContext {
   * the request with contextual data, and manipulate the
   * result.
   */
-class PostActionBuilder @Inject()(messagesApi: MessagesApi,
-                                  playBodyParsers: PlayBodyParsers)(
+class PostActionBuilder @Inject()(messagesApi: MessagesApi, playBodyParsers: PlayBodyParsers)(
     implicit val executionContext: ExecutionContext)
     extends ActionBuilder[PostRequest, AnyContent]
     with RequestMarkerContext
@@ -65,11 +60,9 @@ class PostActionBuilder @Inject()(messagesApi: MessagesApi,
 
   private val logger = Logger(this.getClass)
 
-  override def invokeBlock[A](request: Request[A],
-                              block: PostRequestBlock[A]): Future[Result] = {
+  override def invokeBlock[A](request: Request[A], block: PostRequestBlock[A]): Future[Result] = {
     // Convert to marker context and use request in block
-    implicit val markerContext: MarkerContext = requestHeaderToMarkerContext(
-      request)
+    implicit val markerContext: MarkerContext = requestHeaderToMarkerContext(request)
     logger.trace(s"invokeBlock: ")
 
     val future = block(new PostRequest(request, messagesApi))
@@ -91,23 +84,20 @@ class PostActionBuilder @Inject()(messagesApi: MessagesApi,
   * This is a good way to minimize the surface area exposed to the controller, so the
   * controller only has to have one thing injected.
   */
-case class PostControllerComponents @Inject()(
-    postActionBuilder: PostActionBuilder,
-    postResourceHandler: PostResourceHandler,
-    actionBuilder: DefaultActionBuilder,
-    parsers: PlayBodyParsers,
-    messagesApi: MessagesApi,
-    langs: Langs,
-    fileMimeTypes: FileMimeTypes,
-    executionContext: scala.concurrent.ExecutionContext)
+case class PostControllerComponents @Inject()(postActionBuilder: PostActionBuilder,
+                                              postResourceHandler: PostResourceHandler,
+                                              actionBuilder: DefaultActionBuilder,
+                                              parsers: PlayBodyParsers,
+                                              messagesApi: MessagesApi,
+                                              langs: Langs,
+                                              fileMimeTypes: FileMimeTypes,
+                                              executionContext: scala.concurrent.ExecutionContext)
     extends ControllerComponents
 
 /**
   * Exposes actions and handler to the PostController by wiring the injected state into the base class.
   */
-class PostBaseController @Inject()(pcc: PostControllerComponents)
-    extends BaseController
-    with RequestMarkerContext {
+class PostBaseController @Inject()(pcc: PostControllerComponents) extends BaseController with RequestMarkerContext {
   override protected def controllerComponents: ControllerComponents = pcc
 
   def PostAction: PostActionBuilder = pcc.postActionBuilder

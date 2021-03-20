@@ -8,12 +8,12 @@ lazy val root = (project in file("."))
     scalaVersion := "2.13.1",
     libraryDependencies ++= Seq(
       guice,
-      "org.joda" % "joda-convert" % "2.2.1",
-      "net.logstash.logback" % "logstash-logback-encoder" % "6.2",
-      "io.lemonlabs" %% "scala-uri" % "1.5.1",
-      "net.codingwell" %% "scala-guice" % "4.2.6",
-      "net.ruippeixotog" %% "scala-scraper" % "2.2.0",
-      "com.github.nscala-time" %% "nscala-time" % "2.22.0",
+      "org.joda"                % "joda-convert"             % "2.2.1",
+      "net.logstash.logback"    % "logstash-logback-encoder" % "6.2",
+      "io.lemonlabs"           %% "scala-uri"                % "1.5.1",
+      "net.codingwell"         %% "scala-guice"              % "4.2.6",
+      "net.ruippeixotog"       %% "scala-scraper"            % "2.2.0",
+      "com.github.nscala-time" %% "nscala-time"              % "2.22.0",
       //"io.spray" %%  "spray-json" % "1.3.5",
       "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
     ),
@@ -31,15 +31,16 @@ lazy val gatling = (project in file("gatling"))
     scalaVersion := "2.12.10",
     libraryDependencies ++= Seq(
       "io.gatling.highcharts" % "gatling-charts-highcharts" % gatlingVersion % Test,
-      "io.gatling" % "gatling-test-framework" % gatlingVersion % Test
+      "io.gatling"            % "gatling-test-framework"    % gatlingVersion % Test
     )
   )
 
 // Documentation for this project:
 //    sbt "project docs" "~ paradox"
 //    open docs/target/paradox/site/index.html
-lazy val docs = (project in file("docs")).enablePlugins(ParadoxPlugin).
-  settings(
+lazy val docs = (project in file("docs"))
+  .enablePlugins(ParadoxPlugin)
+  .settings(
     scalaVersion := "2.13.1",
     paradoxProperties += ("download_url" -> "https://example.lightbend.com/v1/download/play-samples-play-scala-rest-api-example")
   )
