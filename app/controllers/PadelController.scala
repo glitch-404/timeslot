@@ -13,7 +13,7 @@ import play.api.Logger
 import scala.concurrent.duration._
 import scala.concurrent.Await
 
-class PadelController @Inject() (val controllerComponents: ControllerComponents) extends BaseController {
+class PadelController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
 
   import json.PadelJsonProtocol._
 

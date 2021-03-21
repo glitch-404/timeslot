@@ -21,9 +21,8 @@ object PadelJsonProtocol {
 
   implicit val courtTimeWrites: Writes[CourtTime] = (ct: CourtTime) => {
     Json.obj(
-      "startTime" -> ct.startTime.toString,
-      "duration" -> periodFormatter
-        .print(ct.duration),
+      "startTime"   -> ct.startTime.toString,
+      "duration"    -> periodFormatter.print(ct.duration),
       "date"        -> ct.date.toString,
       "courtNumber" -> ct.courtNumber,
       "location"    -> ct.location
@@ -53,5 +52,5 @@ object PadelJsonProtocol {
     }
   }
 
-   */
+ */
 }

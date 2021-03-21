@@ -23,11 +23,8 @@ object DateParser extends DateParser {
   private val logger = LoggerFactory.getLogger(getClass())
 
   private lazy val periodFormatter = new PeriodFormatterBuilder()
-    .appendHours()
-    .appendSuffix(":")
     .appendMinutes()
-    .appendSuffix(":")
-    .appendMillis()
+    .appendSuffix("min")
     .toFormatter
 
   private lazy val dateFormatter = new DateTimeFormatterBuilder()

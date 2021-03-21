@@ -22,6 +22,5 @@ case class CourtTime(startTime: LocalTime, duration: Period, date: LocalDate, co
         }
       case other => other
     }
-
   }
 }
