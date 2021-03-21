@@ -11,8 +11,17 @@ import com.github.nscala_time.time.Imports._
   * @param courtNumber The court number of the reservation
   * @param location The location (first Padel Tampere, then also including Padeluxe)
   */
-case class CourtTime(startTime: Option[LocalTime],
-                     duration: Option[Period],
-                     date: Option[LocalDate],
-                     courtNumber: String,
-                     location: String)
+case class CourtTime(startTime: LocalTime, duration: Period, date: LocalDate, courtNumber: Int, location: String)
+    extends Ordered[CourtTime] {
+  override def compare(that: CourtTime): Int = {
+    courtNumber.compareTo(that.courtNumber) match {
+      case 0 =>
+        date.compareTo(that.date) match {
+          case 0     => startTime.compareTo(that.startTime)
+          case other => other
+        }
+      case other => other
+    }
+
+  }
+}

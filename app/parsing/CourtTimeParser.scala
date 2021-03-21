@@ -25,16 +25,10 @@ object CourtTimeParser {
       location: String
   ): CourtTime = {
     CourtTime(
-      DateParser.parseDateType[LocalTime](
-        startTime,
-        startTime => LocalTime.parse(startTime)
-      ),
-      DateParser.parseDateType[Period](
-        duration,
-        duration => Period.parse(duration, DateParser.getPeriodFormatter)
-      ),
-      DateParser.parseDateType[LocalDate](date, date => LocalDate.parse(date)),
-      courtNumber,
+      LocalTime.parse(startTime),
+      Period.minutes(30), // Factory default reservation segment is 30 mins
+      LocalDate.parse(date),
+      courtNumber.toInt,
       location
     )
   }

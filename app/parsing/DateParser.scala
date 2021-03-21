@@ -58,11 +58,9 @@ object DateParser extends DateParser {
   override def getPeriodFormatter: PeriodFormatter = periodFormatter
 
   override def getDateRange(givenRange: DateRange): List[String] = {
-    val startDate = LocalDate.parse(givenRange.from)
-    val endDate   = LocalDate.parse(givenRange.until)
-    val iter: Iterator[LocalDate] = Iterator.iterate(startDate)(
+    val iter: Iterator[LocalDate] = Iterator.iterate(givenRange.from)(
       _ plusDays 1
-    ) takeWhile (_ isBefore endDate.plusDays(1))
+    ) takeWhile (_ isBefore givenRange.until.plusDays(1))
     iter.map(_.toString(dateFormatter)).toList
   }
 }

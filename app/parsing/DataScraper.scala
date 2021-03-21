@@ -1,6 +1,7 @@
 package parsing
 
 import binding.DateRange
+import com.github.nscala_time.time.Imports.LocalTime
 import model.CourtTime
 import model.PadelCourts._
 import net.ruippeixotog.scalascraper.dsl.DSL._
@@ -33,9 +34,10 @@ object DataScraper {
         for {
           date <- dates
           targetUrl = pc.url.addParam("pvm", date).toString()
-        } yield parseCourts(targetUrl, pc.toString)
+          courts    = parseCourts(targetUrl, pc.toString)
+        } yield courts.map(timesBetween(_, dateRange.startTime, dateRange.endTime))
       }
-      .reduce[Future[List[CourtTime]]]((a, b) => a.zipWith(b)((x, y) => x ++ y))
+      .reduce[Future[List[CourtTime]]]((a, b) => a.zipWith(b)((x, y) => (x ++ y).sorted))
   }
 
   private def parseCourts(
@@ -53,6 +55,7 @@ object DataScraper {
           CourtTimeParser.parseCourtElement(linkOpt, location)
         })
         .toList
+        .sorted
     })
   }
 
@@ -61,6 +64,13 @@ object DataScraper {
   )(implicit ec: ExecutionContext): Future[Iterable[Element]] = {
     Future {
       browser.get(url) >> elementList(".t1b1111")
+    }
+  }
+
+  private def timesBetween(courtTimes: List[CourtTime], startTime: LocalTime, endTime: LocalTime): List[CourtTime] = {
+    courtTimes.filter { ct =>
+      val courtStart = ct.startTime
+      courtStart.isAfter(startTime) && courtStart.isBefore(endTime)
     }
   }
 

@@ -2,9 +2,8 @@ package json
 
 import model.CourtTime
 import org.joda.time.format.{PeriodFormatter, PeriodFormatterBuilder}
-import org.slf4j.LoggerFactory
-import parsing.CourtTimeParser
-import play.api.libs.json.{JsValue, Json, Writes}
+import org.slf4j.{Logger, LoggerFactory}
+import play.api.libs.json.{Json, Writes}
 //import spray.json.{DefaultJsonProtocol, DeserializationException, JsObject, JsString, JsValue, RootJsonFormat}
 
 /**
@@ -13,25 +12,22 @@ import play.api.libs.json.{JsValue, Json, Writes}
   */
 object PadelJsonProtocol {
 
-  val logger = LoggerFactory.getLogger(getClass())
+  val logger: Logger = LoggerFactory.getLogger(getClass)
   private lazy val periodFormatter: PeriodFormatter =
     new PeriodFormatterBuilder()
-      .appendHours()
-      .appendSuffix("h")
-      .toFormatter()
+      .appendMinutes()
+      .appendSuffix("min")
+      .toFormatter
 
-  implicit val courtTimeWrites = new Writes[CourtTime] {
-    val nullstr: String = "null"
-    def writes(ct: CourtTime): JsValue = {
-      Json.obj(
-        "startTime" -> ct.startTime.getOrElse(nullstr).toString,
-        "duration" -> periodFormatter
-          .print(ct.duration.getOrElse(null)), // NPE possibility
-        "date"        -> ct.date.getOrElse(nullstr).toString,
-        "courtNumber" -> ct.courtNumber,
-        "location"    -> ct.location.toString
-      )
-    }
+  implicit val courtTimeWrites: Writes[CourtTime] = (ct: CourtTime) => {
+    Json.obj(
+      "startTime" -> ct.startTime.toString,
+      "duration" -> periodFormatter
+        .print(ct.duration),
+      "date"        -> ct.date.toString,
+      "courtNumber" -> ct.courtNumber,
+      "location"    -> ct.location
+    )
   }
   /*
   implicit object CourtTimeJsonFormat extends RootJsonFormat[CourtTime] {
@@ -57,5 +53,5 @@ object PadelJsonProtocol {
     }
   }
 
- */
+   */
 }
